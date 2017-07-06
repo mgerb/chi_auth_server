@@ -10,7 +10,7 @@ import (
 var Config configStruct
 
 type configStruct struct {
-	JWTString string `json:"JWTString"`
+	JWTSecret string `json:"JWTSecret"`
 	Address   string `json:"Address"`
 }
 

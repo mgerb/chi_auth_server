@@ -21,7 +21,7 @@ func Init() http.Handler {
 	r.Use(middleware.DefaultCompress)
 
 	// apply auth middleware
-	r.Use(myMiddleware.JwtMiddleware)
+	r.Use(myMiddleware.JWTMiddleware)
 
 	r.Get("/user/login", user.Login)
 	r.Get("/user/createUser", user.Create)

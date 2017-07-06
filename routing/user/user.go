@@ -1,28 +1,50 @@
 package user
 
 import (
-	"fmt"
-	"log"
 	"net/http"
 
-	"github.com/go-chi/chi"
-	"github.com/mgerb/chi_auth_server/middleware"
+	"github.com/mgerb/chi_auth_server/model"
+	"github.com/mgerb/chi_auth_server/response"
+	"github.com/mgerb/chi_auth_server/util"
 )
 
-// Login -
-func Login(w http.ResponseWriter, r *http.Request) {
+/*
+func Example(w http.ResponseWriter, r *http.Request) {
+
+	// get custom values set by middleware
 	s, ok := r.Context().Value("jwt").(*middleware.Claims)
 
 	if !ok {
 		log.Println("not ok")
 	}
 
+	// get url param set by framework /user/test/{id}
 	param := chi.URLParam(r, "test")
+}
+*/
 
-	fmt.Println(param)
+// Login -
+func Login(w http.ResponseWriter, r *http.Request) {
 
-	fmt.Println(s.Email)
-	w.Write([]byte("Login end point: " + param))
+	// check database for user info
+
+	// create new user
+	newUser := model.User{
+		Email: "test email",
+		Name:  "test name",
+	}
+
+	// get new JWT
+	newToken, err := util.GetNewJwt(newUser)
+
+	if err != nil {
+		response.ERR(w, http.StatusInternalServerError, []byte("Internal error."))
+		return
+	}
+
+	newUser.Token = newToken
+
+	response.JSON(w, newUser)
 }
 
 // Create -
