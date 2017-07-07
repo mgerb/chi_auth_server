@@ -5,6 +5,11 @@ import (
 	"net/http"
 )
 
+var (
+	DefaultUnauthorized  = []byte("Unauthorized.")
+	DefaultInternalError = []byte("Internal error.")
+)
+
 // JSON - marshals the provided interface and returns JSON to client
 func JSON(w http.ResponseWriter, content interface{}) {
 

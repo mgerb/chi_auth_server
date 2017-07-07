@@ -8,30 +8,23 @@ import (
 	"github.com/mgerb/chi_auth_server/util"
 )
 
-/*
-func Example(w http.ResponseWriter, r *http.Request) {
-
-	// get custom values set by middleware
-	s, ok := r.Context().Value("jwt").(*middleware.Claims)
-
-	if !ok {
-		log.Println("not ok")
-	}
-
-	// get url param set by framework /user/test/{id}
-	param := chi.URLParam(r, "test")
-}
-*/
-
 // Login -
 func Login(w http.ResponseWriter, r *http.Request) {
 
+	w.Write([]byte("Login end point."))
+
 	// check database for user info
+
+}
+
+// Create -
+func Create(w http.ResponseWriter, r *http.Request) {
 
 	// create new user
 	newUser := model.User{
-		Email: "test email",
-		Name:  "test name",
+		Email:  "test email",
+		Name:   "test name",
+		UserID: "1",
 	}
 
 	// get new JWT
@@ -47,12 +40,14 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	response.JSON(w, newUser)
 }
 
-// Create -
-func Create(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Create user end point."))
-}
-
 // Info -
 func Info(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("User info end point."))
+	// get JWT claims from context that was added in the middleware
+	user, ok := r.Context().Value("claims").(*model.User)
+
+	if !ok {
+		response.ERR(w, http.StatusInternalServerError, response.DefaultInternalError)
+	}
+
+	w.Write([]byte(user.Email + " " + user.Name + " " + user.UserID))
 }
