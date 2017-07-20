@@ -1,8 +1,6 @@
 package routing
 
 import (
-	"net/http"
-
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	myMiddleware "github.com/mgerb/chi_auth_server/middleware"
@@ -10,7 +8,7 @@ import (
 )
 
 // Init - initialize routes
-func Init() http.Handler {
+func Init() *chi.Mux {
 
 	// new router
 	r := chi.NewRouter()
@@ -20,14 +18,21 @@ func Init() http.Handler {
 	r.Use(middleware.Logger)
 	r.Use(middleware.DefaultCompress)
 
-	// apply auth middleware
-	r.Use(myMiddleware.JWTMiddleware)
+	// public routes
+	r.Group(func(r chi.Router) {
+		r.Get("/user/login", user.Login)
+		r.Get("/user/createUser", user.Create)
+	})
 
-	r.Get("/user/login", user.Login)
-	r.Get("/user/createUser", user.Create)
+	// authenticated routes
+	r.Group(func(r chi.Router) {
 
-	// end points
-	r.Get("/user/info", user.Info)
+		// apply auth middleware
+		r.Use(myMiddleware.JWTMiddleware)
+
+		// end points
+		r.Get("/user/info", user.Info)
+	})
 
 	return r
 }

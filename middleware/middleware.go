@@ -13,21 +13,9 @@ import (
 	"github.com/mgerb/chi_auth_server/response"
 )
 
-// routes skipped by JWT Auth middleware
-var unauthorizedRoutes = map[string]bool{
-	"/user/createUser": true,
-	"/user/login":      true,
-}
-
 // JWTMiddleware -
 func JWTMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
-		// skip auth middleware if is an unauthorized route
-		if unauthorizedRoutes[r.URL.String()] {
-			next.ServeHTTP(w, r)
-			return
-		}
 
 		authHeader := strings.Split(r.Header.Get("Authorization"), " ")
 
