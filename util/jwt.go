@@ -12,9 +12,10 @@ import (
 // GetNewJwt - get a new token
 func GetNewJwt(user model.User) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"email": user.Email,
-		"name":  user.Name,
-		"iat":   time.Now().Unix(), // issued at
+		"email":  user.Email,
+		"name":   user.Name,
+		"userID": user.UserID,
+		"iat":    time.Now().Unix(), // issued at
 	})
 
 	tokenString, err := token.SignedString([]byte(config.Config.JWTSecret))
