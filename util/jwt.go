@@ -1,30 +1,28 @@
 package util
 
 import (
-	"log"
 	"time"
 
-	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/go-chi/jwtauth"
 	"github.com/mgerb/chi_auth_server/config"
 	"github.com/mgerb/chi_auth_server/model"
 )
 
+// TokenAuth - used to encode/decode tokens
+var TokenAuth = jwtauth.New("HS256", []byte(config.Config.JWTSecret), nil)
+
 // GetNewJwt - get a new token
 func GetNewJwt(user model.User) (string, error) {
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+
+	newClaims := jwtauth.Claims{
 		"email":  user.Email,
 		"name":   user.Name,
 		"userID": user.UserID,
-		"iat":    time.Now().Unix(), // issued at
-	})
-
-	tokenString, err := token.SignedString([]byte(config.Config.JWTSecret))
-
-	log.Println(tokenString)
-	if err != nil {
-		log.Println(err)
-		return "", err
 	}
 
-	return tokenString, nil
+	newClaims.SetIssuedNow().SetExpiryIn(time.Hour * 24 * 60)
+
+	_, tokenString, err := TokenAuth.Encode(newClaims)
+
+	return tokenString, err
 }

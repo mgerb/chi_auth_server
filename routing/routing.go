@@ -3,8 +3,9 @@ package routing
 import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
-	myMiddleware "github.com/mgerb/chi_auth_server/middleware"
+	"github.com/go-chi/jwtauth"
 	"github.com/mgerb/chi_auth_server/routing/user"
+	"github.com/mgerb/chi_auth_server/util"
 )
 
 // Init - initialize routes
@@ -27,8 +28,9 @@ func Init() *chi.Mux {
 	// authenticated routes
 	r.Group(func(r chi.Router) {
 
-		// apply auth middleware
-		r.Use(myMiddleware.JWTMiddleware)
+		r.Use(jwtauth.Verifier(util.TokenAuth))
+
+		r.Use(jwtauth.Authenticator)
 
 		// end points
 		r.Get("/user/info", user.Info)
