@@ -12,24 +12,34 @@ import (
 // Login -
 func Login(w http.ResponseWriter, r *http.Request) {
 
-	w.Write([]byte("Login end point."))
+	username := r.FormValue("username")
+	password := r.FormValue("password")
 
-	// check database for user info
+	response.JSON(w, map[string]interface{}{
+		"username": username,
+		"password": password,
+	})
 
 }
 
 // Create -
 func Create(w http.ResponseWriter, r *http.Request) {
 
+	email := r.FormValue("email")
+	// password := r.FormValue("password")
+
+	// TODO - validation
+
+	// TODO - perform database operations
+
 	// create new user
 	newUser := model.User{
-		Email:  "test email",
-		Name:   "test name",
-		UserID: "1",
+		Email:  email,
+		UserID: "1", // temp user id
 	}
 
 	// get new JWT
-	newToken, err := util.GetNewJwt(newUser)
+	newToken, exp, err := util.GetNewJwt(newUser)
 
 	if err != nil {
 		response.ERR(w, http.StatusInternalServerError, []byte("Internal error."))
@@ -37,6 +47,7 @@ func Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	newUser.Token = newToken
+	newUser.Exp = exp
 
 	response.JSON(w, newUser)
 }

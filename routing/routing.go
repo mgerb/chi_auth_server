@@ -25,8 +25,8 @@ func Init() *chi.Mux {
 
 	// public routes
 	r.Group(func(r chi.Router) {
-		r.Get("/user/login", user.Login)
-		r.Get("/user/createUser", user.Create)
+		r.Post("/user/login", user.Login)
+		r.Post("/user/create", user.Create)
 	})
 
 	// authenticated routes
