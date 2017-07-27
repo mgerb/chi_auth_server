@@ -6,7 +6,7 @@ import (
 	"github.com/go-chi/jwtauth"
 	"github.com/mgerb/chi_auth_server/config"
 	"github.com/mgerb/chi_auth_server/routing/user"
-	"github.com/mgerb/chi_auth_server/util"
+	"github.com/mgerb/chi_auth_server/util/jwt"
 )
 
 // Init - initialize routes
@@ -32,12 +32,14 @@ func Init() *chi.Mux {
 	// authenticated routes
 	r.Group(func(r chi.Router) {
 
-		r.Use(jwtauth.Verifier(util.TokenAuth))
+		r.Use(jwtauth.Verifier(jwt.TokenAuth))
 
 		r.Use(jwtauth.Authenticator)
 
 		// end points
 		r.Get("/user/info", user.Info)
+		r.Get("/user/token/refresh", user.TokenRefresh)
+
 	})
 
 	return r

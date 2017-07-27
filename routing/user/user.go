@@ -3,10 +3,9 @@ package user
 import (
 	"net/http"
 
-	"github.com/go-chi/jwtauth"
 	"github.com/mgerb/chi_auth_server/model"
 	"github.com/mgerb/chi_auth_server/response"
-	"github.com/mgerb/chi_auth_server/util"
+	"github.com/mgerb/chi_auth_server/util/jwt"
 )
 
 // Login -
@@ -32,39 +31,63 @@ func Create(w http.ResponseWriter, r *http.Request) {
 
 	// TODO - perform database operations
 
-	// create new user
-	newUser := model.User{
+	// create new claims for jwt
+	claims := jwt.Claims{
 		Email:  email,
 		UserID: "1", // temp user id
 	}
 
 	// get new JWT
-	newToken, exp, err := util.GetNewJwt(newUser)
+	newToken, exp, err := jwt.GetNewJwt(claims)
 
 	if err != nil {
 		response.ERR(w, http.StatusInternalServerError, []byte("Internal error."))
 		return
 	}
 
-	newUser.Token = newToken
-	newUser.Exp = exp
+	newUser := model.User{
+		Email:  email,
+		UserID: "1",
+		Token:  newToken,
+		Exp:    exp,
+	}
+
+	response.JSON(w, newUser)
+}
+
+// TokenRefresh - get a new token with fresh expiration date
+func TokenRefresh(w http.ResponseWriter, r *http.Request) {
+
+	claims, err := jwt.ParseClaims(r.Context())
+
+	if err != nil {
+		response.ERR(w, http.StatusInternalServerError, response.DefaultInternalError)
+	}
+
+	newToken, exp, err := jwt.GetNewJwt(claims)
+
+	if err != nil {
+		response.ERR(w, http.StatusInternalServerError, response.DefaultInternalError)
+	}
+
+	newUser := model.User{
+		Email:  claims.Email,
+		UserID: claims.UserID,
+		Token:  newToken,
+		Exp:    exp,
+	}
 
 	response.JSON(w, newUser)
 }
 
 // Info -
 func Info(w http.ResponseWriter, r *http.Request) {
-	// get JWT claims from context that was added in the middleware
 
-	_, claims, err := jwtauth.FromContext(r.Context())
+	claims, err := jwt.ParseClaims(r.Context())
 
 	if err != nil {
 		response.ERR(w, http.StatusInternalServerError, response.DefaultInternalError)
 	}
 
-	email, _ := claims.Get("email")
-	name, _ := claims.Get("name")
-	userID, _ := claims.Get("userID")
-
-	w.Write([]byte(email.(string) + " " + name.(string) + " " + userID.(string)))
+	response.JSON(w, claims)
 }
