@@ -1,4 +1,10 @@
 {
     "JWTSecret": "secret",
-    "Address": "0.0.0.0:8080"
+    "Address": "0.0.0.0:8080",
+    "Database": {
+        "Name": "",
+        "Address": "",
+        "User": "",
+        "Password": ""
+    }
 }

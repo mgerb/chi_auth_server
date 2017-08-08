@@ -1,8 +1,10 @@
 package user
 
 import (
+	"log"
 	"net/http"
 
+	"github.com/mgerb/chi_auth_server/db"
 	"github.com/mgerb/chi_auth_server/model"
 	"github.com/mgerb/chi_auth_server/response"
 	"github.com/mgerb/chi_auth_server/util/jwt"
@@ -30,6 +32,13 @@ func Create(w http.ResponseWriter, r *http.Request) {
 	// TODO - validation
 
 	// TODO - perform database operations
+	_, err := db.Conn.Exec(`INSERT INTO users(email, password) VALUES($1, $2);`, email, "password 123")
+
+	if err != nil {
+		log.Println(err)
+		response.ERR(w, http.StatusInternalServerError, response.DefaultInternalError)
+		return
+	}
 
 	// create new claims for jwt
 	claims := jwt.Claims{
