@@ -1,11 +1,11 @@
 package main
 
 import (
+	"log"
 	"net/http"
 
-	"log"
-
 	"github.com/mgerb/chi_auth_server/config"
+	"github.com/mgerb/chi_auth_server/db"
 	"github.com/mgerb/chi_auth_server/routing"
 	"golang.org/x/crypto/acme/autocert"
 )
@@ -15,11 +15,13 @@ func main() {
 	// read config file
 	config.Init()
 
+	// start database connections
+	db.Connect()
+
 	// get new router
 	router := routing.Init()
 
 	// start server
-
 	if config.Flags.TLS {
 
 		// start server on port 80 to redirect

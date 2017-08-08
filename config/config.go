@@ -9,16 +9,24 @@ import (
 
 // Config -
 var (
-	Config configFile
-	Flags  configFlags
+	Config config
+	Flags  flags
 )
 
-type configFile struct {
-	JWTSecret string `json:"JWTSecret"`
-	Address   string `json:"Address"`
+type config struct {
+	JWTSecret string   `json:"JWTSecret"`
+	Address   string   `json:"Address"`
+	Database  database `json:"Database"`
 }
 
-type configFlags struct {
+type database struct {
+	Address  string `json:"Address"`
+	User     string `json:"User"`
+	Password string `json:"Password"`
+	Name     string `json:"Name"`
+}
+
+type flags struct {
 	Prod bool
 	TLS  bool
 }
